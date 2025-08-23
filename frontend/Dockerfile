@@ -31,7 +31,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 # Copy frontend build files
-COPY build/ /usr/share/nginx/html/
+COPY code /usr/share/nginx/html/
 
 # Run container as non-root nginx user
 USER nginx
