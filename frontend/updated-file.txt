@@ -1,21 +1,29 @@
 server {
     listen 80;
 
-    # Serve React app
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Serve React frontend
     location / {
-        root   /usr/share/nginx/html;
-        index  index.html;
         try_files $uri /index.html;
     }
 
-    # Proxy API calls to backend (strip /api prefix)
+    # Proxy API calls to backend (strip /api prefix if needed)
     location /api/ {
-        rewrite ^/api/(.*)$ /$1 break;
-        proxy_pass http://backend:8080;
+        rewrite ^/api/(.*)$ /$1 break;   # remove /api prefix before forwarding
+        proxy_pass http://backend:8080;  # backend service name from docker-compose
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
     }
+
+    error_page 404 /index.html;   # React Router support
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html { }
 }
